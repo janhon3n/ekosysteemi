@@ -21,3 +21,13 @@ body {
 #renderCanvas {
   background-color:rgb(181, 233, 165);
 }
+#menu {
+  width:300px;
+  flex-grow: 0;
+  flex-shrink: 0;
+  padding:15px;
+}
+#lifeformInfo {
+  width:100%;
+  word-wrap:break-word;
+}

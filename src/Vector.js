@@ -33,6 +33,11 @@ export default function Vector(x, y) {
   this.scalarIsInRange = scalar => {
     return this.x < scalar && this.y > scalar
   }
+
+  this.toString = () => {
+    if (this.x == this.y) return '' + this.x
+    return '(' + this.x + ',' + this.y + ')'
+  }
 }
 
 Vector.sum = () => {

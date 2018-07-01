@@ -58,11 +58,11 @@ Genetics.geneTypes = [
   },
   {
     char: 'T',
-    value: 0.33
+    value: 0.333333
   },
   {
     char: 'G',
-    value: 0.67
+    value: 0.666667
   },
   {
     char: 'C',

@@ -5,12 +5,6 @@ import { deflateRaw } from 'zlib'
 import Vector from './Vector'
 import lifeforms from './index'
 
-function withinLimits(value, limits) {
-  if (value < limits[0]) return limits[0]
-  if (value > limits[1]) return limits[1]
-  return value
-}
-
 export default function Lifeform(genetics) {
   this.acceleration = Vector.zero
   this.speed = Vector.zero
@@ -44,10 +38,21 @@ export default function Lifeform(genetics) {
   }
 
   this.breedAlone = () => {
-    let newLifeform = new Lifeform(genetics.duplicate().mutate(2))
+    let newLifeform = new Lifeform(genetics.duplicate().mutate(15))
     newLifeform.position = this.position
     lifeforms.push(newLifeform)
   }
 
-  setInterval(this.breedAlone, 5000)
+  this.isHit = point => {
+    let size = this.getSize()
+    let pos = this.position
+    return (
+      new Vector(pos.x, pos.x + size.x).scalarIsInRange(point.x) &&
+      new Vector(pos.y, pos.y + size.y).scalarIsInRange(point.y)
+    )
+  }
+
+  this.toString = () => {
+    return genetics.toString()
+  }
 }

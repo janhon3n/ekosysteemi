@@ -104,7 +104,7 @@ module.exports = [{"name":"size","locus":{"correlation":[1,2,3,4,5,6],"inverse":
 /*! exports provided: speed, width, height, default */
 /***/ (function(module) {
 
-module.exports = {"speed":2,"width":800,"height":800};
+module.exports = {"speed":2,"width":700,"height":1200};
 
 /***/ }),
 
@@ -14292,11 +14292,11 @@ Genetics.geneTypes = [
   },
   {
     char: 'T',
-    value: 0.33
+    value: 0.333333
   },
   {
     char: 'G',
-    value: 0.67
+    value: 0.666667
   },
   {
     char: 'C',
@@ -14336,12 +14336,6 @@ var _config_Config__WEBPACK_IMPORTED_MODULE_2___namespace = /*#__PURE__*/__webpa
 
 
 
-function withinLimits(value, limits) {
-  if (value < limits[0]) return limits[0]
-  if (value > limits[1]) return limits[1]
-  return value
-}
-
 function Lifeform(genetics) {
   this.acceleration = _Vector__WEBPACK_IMPORTED_MODULE_4__["default"].zero
   this.speed = _Vector__WEBPACK_IMPORTED_MODULE_4__["default"].zero
@@ -14375,12 +14369,62 @@ function Lifeform(genetics) {
   }
 
   this.breedAlone = () => {
-    let newLifeform = new Lifeform(genetics.duplicate().mutate(2))
+    let newLifeform = new Lifeform(genetics.duplicate().mutate(15))
     newLifeform.position = this.position
     _index__WEBPACK_IMPORTED_MODULE_5__["default"].push(newLifeform)
   }
 
-  setInterval(this.breedAlone, 5000)
+  this.isHit = point => {
+    let size = this.getSize()
+    let pos = this.position
+    return (
+      new _Vector__WEBPACK_IMPORTED_MODULE_4__["default"](pos.x, pos.x + size.x).scalarIsInRange(point.x) &&
+      new _Vector__WEBPACK_IMPORTED_MODULE_4__["default"](pos.y, pos.y + size.y).scalarIsInRange(point.y)
+    )
+  }
+
+  this.toString = () => {
+    return genetics.toString()
+  }
+}
+
+
+/***/ }),
+
+/***/ "./src/LifeformInfoRenderer.js":
+/*!*************************************!*\
+  !*** ./src/LifeformInfoRenderer.js ***!
+  \*************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return LifeformInfoRenderer; });
+/* harmony import */ var _config_Attributes__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config/Attributes */ "./config/Attributes.json");
+var _config_Attributes__WEBPACK_IMPORTED_MODULE_0___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../config/Attributes */ "./config/Attributes.json", 1);
+
+
+function LifeformInfoRenderer(div) {
+  this.render = lifeform => {
+    let html = lifeform.toString()
+    html += '<table><tbody>'
+    _config_Attributes__WEBPACK_IMPORTED_MODULE_0__.forEach(att => {
+      let value = lifeform['get' + att.name.capitalize()]()
+      html += '<tr>'
+      html += '<th>' + att.name + '</th>'
+      html += '<td>' + round(value) + '</td>'
+      html += '</tr>'
+    })
+    html += '</tbody></table>'
+    div.innerHTML = html
+  }
+}
+
+function round(string) {
+  let num = Number(string)
+  let roundedNum = Math.round(num * 100) / 100
+  return '' + roundedNum
 }
 
 
@@ -14398,6 +14442,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Renderer; });
 /* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config/Config */ "./config/Config.json");
 var _config_Config__WEBPACK_IMPORTED_MODULE_0___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../config/Config */ "./config/Config.json", 1);
+/* harmony import */ var _Vector__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Vector */ "./src/Vector.js");
+
 
 
 function Renderer(canvas) {
@@ -14406,6 +14452,8 @@ function Renderer(canvas) {
   context.canvas.width = _config_Config__WEBPACK_IMPORTED_MODULE_0__.width
   context.canvas.height = _config_Config__WEBPACK_IMPORTED_MODULE_0__.height
 
+  var lastState = null
+
   this.render = state => {
     context.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -14413,7 +14461,8 @@ function Renderer(canvas) {
     state.lifeforms.forEach(lifeform => {
       let width = lifeform.getSize().x
       let height = lifeform.getSize().y
-      context.fillStyle = 'hsl(' + lifeform.getColor() + ', 80%, 40%)'
+      let hue = lifeform.getColor()
+      context.fillStyle = 'hsl(' + hue + ', 80%, 40%)'
       context.fillRect(
         lifeform.position.x - width / 2,
         lifeform.position.y - height / 2,
@@ -14422,6 +14471,16 @@ function Renderer(canvas) {
       )
     })
     context.closePath()
+    lastState = state
+  }
+
+  canvas.onclick = e => {
+    if (typeof this.onLifeformSelect === 'function') {
+      let hitLifeform = lastState.lifeforms.find(lf => {
+        return lf.isHit(new _Vector__WEBPACK_IMPORTED_MODULE_1__["default"](e.offsetX, e.offsetY))
+      })
+      hitLifeform ? this.onLifeformSelect(hitLifeform) : 0
+    }
   }
 }
 
@@ -14497,6 +14556,11 @@ function Vector(x, y) {
   this.scalarIsInRange = scalar => {
     return this.x < scalar && this.y > scalar
   }
+
+  this.toString = () => {
+    if (this.x == this.y) return '' + this.x
+    return '(' + this.x + ',' + this.y + ')'
+  }
 }
 
 Vector.sum = () => {
@@ -14524,12 +14588,14 @@ Vector.random = () => {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Renderer__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Renderer */ "./src/Renderer.js");
-/* harmony import */ var _Lifeform__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Lifeform */ "./src/Lifeform.js");
-/* harmony import */ var _Controls__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Controls */ "./src/Controls.js");
-/* harmony import */ var _Timer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Timer */ "./src/Timer.js");
-/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../config/Config */ "./config/Config.json");
-var _config_Config__WEBPACK_IMPORTED_MODULE_4___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../config/Config */ "./config/Config.json", 1);
+/* harmony import */ var _LifeformInfoRenderer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LifeformInfoRenderer */ "./src/LifeformInfoRenderer.js");
+/* harmony import */ var _Lifeform__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Lifeform */ "./src/Lifeform.js");
+/* harmony import */ var _Controls__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Controls */ "./src/Controls.js");
+/* harmony import */ var _Timer__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Timer */ "./src/Timer.js");
+/* harmony import */ var _config_Config__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../config/Config */ "./config/Config.json");
+var _config_Config__WEBPACK_IMPORTED_MODULE_5___namespace = /*#__PURE__*/__webpack_require__.t(/*! ../config/Config */ "./config/Config.json", 1);
 /* global document */
+
 
 
 
@@ -14542,19 +14608,24 @@ String.prototype.capitalize = function() {
 
 var lifeforms = []
 var canvas = document.getElementById('renderCanvas')
+var lifeformInfoRenderer = new _LifeformInfoRenderer__WEBPACK_IMPORTED_MODULE_1__["default"](document.getElementById('lifeformInfo'))
 var renderer = new _Renderer__WEBPACK_IMPORTED_MODULE_0__["default"](canvas)
 
-Object(_Controls__WEBPACK_IMPORTED_MODULE_2__["default"])('newLifeform', () => {
-  lifeforms.push(new _Lifeform__WEBPACK_IMPORTED_MODULE_1__["default"]())
+renderer.onLifeformSelect = lifeform => {
+  lifeformInfoRenderer.render(lifeform)
+}
+
+Object(_Controls__WEBPACK_IMPORTED_MODULE_3__["default"])('newLifeform', () => {
+  lifeforms.push(new _Lifeform__WEBPACK_IMPORTED_MODULE_2__["default"]())
 })
 
 async function update(delta) {
   lifeforms.forEach(lf => lf.update(delta))
 }
 
-var timer = new _Timer__WEBPACK_IMPORTED_MODULE_3__["default"]()
+var timer = new _Timer__WEBPACK_IMPORTED_MODULE_4__["default"]()
 async function gameLoop() {
-  await update(timer.getDelta() * _config_Config__WEBPACK_IMPORTED_MODULE_4__.speed)
+  await update(timer.getDelta() * _config_Config__WEBPACK_IMPORTED_MODULE_5__.speed)
   await renderer.render({
     lifeforms: lifeforms
   })

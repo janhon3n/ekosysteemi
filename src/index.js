@@ -1,5 +1,6 @@
 /* global document */
 import Renderer from './Renderer'
+import LifeformInfoRenderer from './LifeformInfoRenderer'
 import Lifeform from './Lifeform'
 import bindControl from './Controls'
 import Timer from './Timer'
@@ -11,7 +12,12 @@ String.prototype.capitalize = function() {
 
 var lifeforms = []
 var canvas = document.getElementById('renderCanvas')
+var lifeformInfoRenderer = new LifeformInfoRenderer(document.getElementById('lifeformInfo'))
 var renderer = new Renderer(canvas)
+
+renderer.onLifeformSelect = lifeform => {
+  lifeformInfoRenderer.render(lifeform)
+}
 
 bindControl('newLifeform', () => {
   lifeforms.push(new Lifeform())
