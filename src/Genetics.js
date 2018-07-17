@@ -1,26 +1,35 @@
-import attributes from '../config/Attributes.json'
 import Vector from './Vector'
+import config from './config/Config'
 
-export default function Genetics(geneString) {
-  this.setToRandomGenes = () => {
-    geneString = ''
-    for (let i = 0; i < Genetics.geneStringLength; i++) {
-      geneString = geneString + this.getRandomGene().char
-    }
-  }
+const A = {
+  value: 0,
+  char: 'A'
+}
+const T = {
+  value: 0.333,
+  char: 'T'
+}
+const C = {
+  value: 0.667,
+  char: 'C'
+}
+const G = {
+  value: 1,
+  char: 'G'
+}
 
-  this.getRandomGene = () => {
-    return Genetics.geneTypes[Math.floor(Math.random() * 4)]
-  }
+export default function Genetics(genes) {
 
-  this.createAttributeValueFunc = att => () => {
+  this.genes = genes || Genetics.getRandomGenes()
+
+  this.calculateAttribute = att => {
     if (att.range === undefined) att.range = [0, 1]
     let percentage = 0
     let locusAmount = att.locus.correlation.length + att.locus.inverse.length
     let step = 1 / locusAmount
 
     let indexToValue = index => {
-      return Genetics.geneCharToValue(geneString.charAt(index))
+      return this.genes[index-1].value
     }
 
     let correlationValues = att.locus.correlation.map(indexToValue)
@@ -33,42 +42,56 @@ export default function Genetics(geneString) {
   }
 
   this.mutate = numberOfMutations => {
-    let pos = Math.floor(Math.random() * geneString.length)
-    return new Genetics(
-      geneString.slice(0, pos) + this.getRandomGene().char + geneString.slice(pos + 1)
-    )
+    let newGenes = this.genes.slice()
+    for (let i = 0; i < numberOfMutations; i++){
+      let pos = Math.floor(Math.random() * newGenes.length)
+      newGenes[pos] = Genetics.getRandomGene()
+    }
+    return new Genetics(newGenes)
   }
 
   this.duplicate = () => {
-    return new Genetics(geneString)
+    return new Genetics(this.genes.slice())
   }
 
   this.toString = () => {
-    return geneString
+    let string = ''
+    this.genes.forEach(gene => string += gene.char)
+    return string
   }
-
-  if (geneString === undefined) this.setToRandomGenes()
 }
 
-Genetics.geneStringLength = 40
-Genetics.geneTypes = [
-  {
-    char: 'A',
-    value: 0
-  },
-  {
-    char: 'T',
-    value: 0.333333
-  },
-  {
-    char: 'G',
-    value: 0.666667
-  },
-  {
-    char: 'C',
-    value: 1
+Genetics.geneCount = 20
+
+Genetics.getRandomGene = () => {
+  return [A,T,C,G][Math.floor(Math.random() * 4)]
+}
+
+Genetics.getRandomGenes = () => {
+  let genes = []
+  for (let i = 0; i < Genetics.geneCount; i++) {
+    genes.push(Genetics.getRandomGene())
   }
-]
-Genetics.geneCharToValue = char => {
-  return Genetics.geneTypes.find(g => g.char === char).value
+  return genes
+}
+
+Genetics.combine = (geneticsA, geneticsB) => {
+  let newGenes = []
+  for (let i = 0; i < Genetics.geneCount; i++) {
+    newGenes.push(Math.random() < 0.5 ?
+      geneticsA.genes[i] :
+      geneticsA.genes[i]
+    )
+  }
+  return new Genetics(newGenes)
+}
+
+Genetics.areCloseFenotypes = (geneticsA, geneticsB) => {
+  let differentGenes = 0
+  for (let i = 0; i < Genetics.geneStringLength; i++) {
+    if(geneticsA.genes[i].char === geneticsB.genes[i].char)
+      differentGenes++
+      if(differentGenes > config.closeFenotypeLimit) return false
+  }
+  return true
 }

@@ -1,0 +1,36 @@
+
+.LifeformInfo {
+width:100%;
+flex-direction: column;
+margin-top:20px;
+}
+.LifeformInfo div, .LifeformInfo table {
+  margin:5px;
+  margin-top:20px;
+}
+.LifeformInfo table {
+  width:100%;
+}
+.LifeformInfo tr {
+  padding:5px;
+}
+
+.LifeformInfo .AttributeTable th {
+  text-align: right;
+}
+
+.LifeformInfo .DataTable {
+  font-size:14px;
+  text-align: left;
+  padding:15px;
+}
+.LifeformInfo .DataTable td{
+  text-align: right;
+}
+
+.LifeformInfo .AttributeTable tr {
+  cursor:pointer;
+}
+.LifeformInfo .AttributeTable td, .LifeformInfo .AttributeTable th {
+  padding:5px;
+}

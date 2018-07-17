@@ -1,0 +1,64 @@
+[
+  {
+    "name": "size",
+    "locus":  {
+      "correlation": [1,2,3,4,5,6],
+      "inverse": []
+    },
+    "range": [5, 10]
+  },
+  {
+    "name": "acceleration",
+    "locus": {
+      "correlation": [9,10,11],
+      "inverse": [1,3,5,6]
+    },
+    "range": [0, 1]
+  },
+  {
+    "name": "speed",
+    "locus": {
+      "correlation": [7,8,9,10],
+      "inverse": [5,6]
+    },
+    "range": [5, 20]
+  },
+  {
+    "name": "power",
+    "locus": {
+      "correlation": [1,2,4,6,18,19],
+      "inverse": []
+    }
+  },
+  {
+    "name": "color",
+    "locus": {
+      "correlation": [1,2,3,4,5],
+      "inverse": []
+    },
+    "range": [0, 360]
+  },
+  {
+    "name": "color2",
+    "locus": {
+      "correlation": [6,7,8,9,10],
+      "inverse": []
+    },
+    "range": [0, 360]
+  },
+  {
+    "name": "libido",
+    "locus": {
+      "correlation": [12,13,14,15,16,17],
+      "inverse": []
+    }
+  },
+  {
+    "name": "vision",
+    "locus": {
+      "correlation": [1,4,8,12,18],
+      "inverse": []
+    },
+    "range": [10, 100]
+  }
+]

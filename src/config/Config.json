@@ -1,0 +1,12 @@
+{
+  "speed": 1,
+  "width": 700,
+  "height": 1200,
+  "collidingDistance": 5,
+  "sexualTensionRefillSpeed": 0.05,
+  "movement": {
+    "random": 1,
+    "libido": 0.1
+  },
+  "closeFenotypeLimit": 5
+}
